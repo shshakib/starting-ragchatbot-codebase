@@ -1,11 +1,12 @@
 """Tests for RAGSystem.query() content-query handling in rag_system.py"""
+
 import pytest
 from unittest.mock import MagicMock, patch, call
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def make_mock_config():
     cfg = MagicMock()
@@ -50,9 +51,7 @@ def rag(tmp_path):
 
         # Default happy-path behaviour
         system._mock_ai.generate_response.return_value = "Here is your answer."
-        system._mock_tm.get_tool_definitions.return_value = [
-            {"name": "search_course_content"}
-        ]
+        system._mock_tm.get_tool_definitions.return_value = [{"name": "search_course_content"}]
         system._mock_tm.get_last_sources.return_value = []
 
         yield system
@@ -61,6 +60,7 @@ def rag(tmp_path):
 # ---------------------------------------------------------------------------
 # query() — basic contract
 # ---------------------------------------------------------------------------
+
 
 def test_query_returns_tuple_of_response_and_sources(rag):
     result = rag.query("What is machine learning?")
@@ -93,6 +93,7 @@ def test_query_sources_come_from_tool_manager(rag):
 # ---------------------------------------------------------------------------
 # query() — tool wiring
 # ---------------------------------------------------------------------------
+
 
 def test_query_passes_tool_definitions_to_ai_generator(rag):
     tool_defs = [{"name": "search_course_content"}, {"name": "get_course_outline"}]
@@ -132,14 +133,13 @@ def test_query_retrieves_sources_before_reset(rag):
 # query() — session / history handling
 # ---------------------------------------------------------------------------
 
+
 def test_query_saves_exchange_when_session_id_provided(rag):
     rag._mock_ai.generate_response.return_value = "The answer."
 
     rag.query("My question", session_id="sess-1")
 
-    rag._mock_sm.add_exchange.assert_called_once_with(
-        "sess-1", "My question", "The answer."
-    )
+    rag._mock_sm.add_exchange.assert_called_once_with("sess-1", "My question", "The answer.")
 
 
 def test_query_no_session_does_not_save_exchange(rag):
@@ -169,6 +169,7 @@ def test_query_no_session_passes_no_history_to_ai(rag):
 # query() — content-query end-to-end mock flow
 # ---------------------------------------------------------------------------
 
+
 def test_query_content_question_full_tool_flow(rag):
     """
     Simulate the full RAG flow:
@@ -184,9 +185,7 @@ def test_query_content_question_full_tool_flow(rag):
         {"text": "Deep Learning - Lesson 3", "url": "https://example.com/lesson/3"}
     ]
 
-    response, sources = rag.query(
-        "Explain backpropagation", session_id="test-session"
-    )
+    response, sources = rag.query("Explain backpropagation", session_id="test-session")
 
     # Correct answer produced
     assert "Backpropagation" in response

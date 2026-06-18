@@ -1,4 +1,5 @@
 """Tests for CourseSearchTool.execute() in search_tools.py"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 from vector_store import SearchResults
@@ -25,6 +26,7 @@ def make_tool():
 # ---------------------------------------------------------------------------
 # execute() output tests
 # ---------------------------------------------------------------------------
+
 
 def test_execute_returns_formatted_results():
     tool, store = make_tool()
@@ -81,6 +83,7 @@ def test_execute_with_search_error_returns_error_string():
 # Argument forwarding tests
 # ---------------------------------------------------------------------------
 
+
 def test_execute_passes_query_to_store_search():
     tool, store = make_tool()
     store.search.return_value = make_results(documents=[], metadata=[])
@@ -115,6 +118,7 @@ def test_execute_passes_lesson_number_to_store_search():
 # ---------------------------------------------------------------------------
 # Source tracking tests
 # ---------------------------------------------------------------------------
+
 
 def test_execute_tracks_sources_after_successful_search():
     tool, store = make_tool()
