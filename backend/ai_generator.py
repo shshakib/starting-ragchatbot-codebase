@@ -1,6 +1,7 @@
 import anthropic
 from typing import List, Optional, Dict, Any
 
+
 class AIGenerator:
     """Handles interactions with Anthropic's Claude API for generating responses"""
 
@@ -37,16 +38,15 @@ Provide only the direct answer to what was asked.
         self.model = model
 
         # Pre-build base API parameters
-        self.base_params = {
-            "model": self.model,
-            "temperature": 0,
-            "max_tokens": 800
-        }
+        self.base_params = {"model": self.model, "temperature": 0, "max_tokens": 800}
 
-    def generate_response(self, query: str,
-                         conversation_history: Optional[str] = None,
-                         tools: Optional[List] = None,
-                         tool_manager=None) -> str:
+    def generate_response(
+        self,
+        query: str,
+        conversation_history: Optional[str] = None,
+        tools: Optional[List] = None,
+        tool_manager=None,
+    ) -> str:
         """
         Generate AI response with optional tool usage and conversation context.
 
@@ -71,7 +71,7 @@ Provide only the direct answer to what was asked.
         api_params = {
             **self.base_params,
             "messages": [{"role": "user", "content": query}],
-            "system": system_content
+            "system": system_content,
         }
 
         # Add tools if available
@@ -89,7 +89,9 @@ Provide only the direct answer to what was asked.
         # Return direct response
         return response.content[0].text
 
-    def _run_tool_loop(self, initial_response, base_params: Dict[str, Any], tools, tool_manager) -> str:
+    def _run_tool_loop(
+        self, initial_response, base_params: Dict[str, Any], tools, tool_manager
+    ) -> str:
         """
         Drive up to MAX_TOOL_ROUNDS sequential tool-call rounds and return final text.
 
@@ -109,19 +111,25 @@ Provide only the direct answer to what was asked.
             for content_block in current_response.content:
                 if content_block.type == "tool_use":
                     try:
-                        result = tool_manager.execute_tool(content_block.name, **content_block.input)
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": content_block.id,
-                            "content": result
-                        })
+                        result = tool_manager.execute_tool(
+                            content_block.name, **content_block.input
+                        )
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": content_block.id,
+                                "content": result,
+                            }
+                        )
                     except Exception as e:
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": content_block.id,
-                            "content": f"Tool execution failed: {str(e)}",
-                            "is_error": True
-                        })
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": content_block.id,
+                                "content": f"Tool execution failed: {str(e)}",
+                                "is_error": True,
+                            }
+                        )
 
             # Append tool results as a single user message
             if tool_results:
@@ -132,7 +140,7 @@ Provide only the direct answer to what was asked.
             next_params = {
                 **self.base_params,
                 "messages": messages,
-                "system": base_params["system"]
+                "system": base_params["system"],
             }
             if not is_last_round and tools:
                 next_params["tools"] = tools

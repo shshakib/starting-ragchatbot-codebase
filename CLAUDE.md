@@ -16,12 +16,23 @@ Create a `.env` file in the project root with `ANTHROPIC_API_KEY=...` before sta
 cd backend && uv run uvicorn app:app --reload --port 8000
 ```
 
-App runs at `http://localhost:8000`. There are no tests or linting scripts configured.
+App runs at `http://localhost:8000`.
 
 Install dependencies:
 ```bash
 uv sync
 ```
+
+## Code Quality
+
+Code is formatted with `black` (line length 100, configured in `pyproject.toml`).
+
+```bash
+./scripts/format.sh   # auto-format the codebase
+./scripts/check.sh     # verify formatting (no changes) + run pytest
+```
+
+Run `./scripts/check.sh` before committing; CI-equivalent checks are not yet wired up automatically.
 
 ## Architecture
 

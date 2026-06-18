@@ -1,12 +1,13 @@
 """Tests for AIGenerator tool-calling behavior in ai_generator.py"""
+
 import pytest
 from unittest.mock import MagicMock, patch, call
 from ai_generator import AIGenerator
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def make_generator():
     """Return an AIGenerator with a mocked Anthropic client."""
@@ -52,6 +53,7 @@ def make_tool_manager(tool_result="Search results here."):
 # ---------------------------------------------------------------------------
 # generate_response — basic API interaction
 # ---------------------------------------------------------------------------
+
 
 def test_generate_response_calls_messages_create():
     gen = make_generator()
@@ -107,6 +109,7 @@ def test_generate_response_sets_temperature_zero():
 # generate_response — tool injection
 # ---------------------------------------------------------------------------
 
+
 def test_generate_response_adds_tools_to_api_params_when_provided():
     gen = make_generator()
     gen.client.messages.create.return_value = end_turn_response()
@@ -142,6 +145,7 @@ def test_generate_response_no_tools_key_when_tools_not_provided():
 # generate_response — tool_use delegation
 # ---------------------------------------------------------------------------
 
+
 def test_generate_response_delegates_to_handle_tool_execution_on_tool_use():
     gen = make_generator()
     first_resp = tool_use_response()
@@ -176,6 +180,7 @@ def test_generate_response_no_tool_manager_returns_direct_when_tool_use():
 # _run_tool_loop — single tool round (existing behavior)
 # ---------------------------------------------------------------------------
 
+
 def test_handle_tool_execution_calls_execute_tool_with_correct_name_and_input():
     gen = make_generator()
     first_resp = tool_use_response(
@@ -204,9 +209,7 @@ def test_handle_tool_execution_sends_tool_result_in_second_api_call():
     gen.client.messages.create.side_effect = [first_resp, final_resp]
     mgr = make_tool_manager(tool_result="Relevant course content.")
 
-    gen.generate_response(
-        query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr
-    )
+    gen.generate_response(query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr)
 
     second_call_kwargs = gen.client.messages.create.call_args_list[1][1]
     messages = second_call_kwargs["messages"]
@@ -215,8 +218,7 @@ def test_handle_tool_execution_sends_tool_result_in_second_api_call():
     assert tool_result_msg["role"] == "user"
     tool_results = tool_result_msg["content"]
     assert any(
-        r.get("type") == "tool_result" and r.get("tool_use_id") == "tu_xyz"
-        for r in tool_results
+        r.get("type") == "tool_result" and r.get("tool_use_id") == "tu_xyz" for r in tool_results
     )
 
 
@@ -259,9 +261,7 @@ def test_single_tool_round_makes_exactly_two_api_calls():
     ]
     mgr = make_tool_manager()
 
-    gen.generate_response(
-        query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr
-    )
+    gen.generate_response(query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr)
 
     assert gen.client.messages.create.call_count == 2
 
@@ -269,6 +269,7 @@ def test_single_tool_round_makes_exactly_two_api_calls():
 # ---------------------------------------------------------------------------
 # _run_tool_loop — two sequential tool rounds (new behavior)
 # ---------------------------------------------------------------------------
+
 
 def test_two_sequential_tool_rounds_makes_three_api_calls():
     gen = make_generator()
@@ -317,9 +318,7 @@ def test_two_rounds_final_call_omits_tools():
     ]
     mgr = make_tool_manager()
 
-    gen.generate_response(
-        query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr
-    )
+    gen.generate_response(query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr)
 
     third_call_kwargs = gen.client.messages.create.call_args_list[2][1]
     assert "tools" not in third_call_kwargs
@@ -356,17 +355,15 @@ def test_messages_accumulate_across_two_rounds():
     ]
     mgr = make_tool_manager()
 
-    gen.generate_response(
-        query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr
-    )
+    gen.generate_response(query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr)
 
     third_call_messages = gen.client.messages.create.call_args_list[2][1]["messages"]
     assert len(third_call_messages) == 5
-    assert third_call_messages[0]["role"] == "user"       # original query
+    assert third_call_messages[0]["role"] == "user"  # original query
     assert third_call_messages[1]["role"] == "assistant"  # tool_use round 0
-    assert third_call_messages[2]["role"] == "user"       # tool_result round 0
+    assert third_call_messages[2]["role"] == "user"  # tool_result round 0
     assert third_call_messages[3]["role"] == "assistant"  # tool_use round 1
-    assert third_call_messages[4]["role"] == "user"       # tool_result round 1
+    assert third_call_messages[4]["role"] == "user"  # tool_result round 1
 
 
 def test_tool_execution_error_does_not_raise_to_caller():
@@ -397,9 +394,7 @@ def test_tool_execution_error_sends_is_error_tool_result():
     mgr = make_tool_manager()
     mgr.execute_tool.side_effect = Exception("timeout")
 
-    gen.generate_response(
-        query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr
-    )
+    gen.generate_response(query="test", tools=[{"name": "search_course_content"}], tool_manager=mgr)
 
     second_call_messages = gen.client.messages.create.call_args_list[1][1]["messages"]
     tool_result_msg = second_call_messages[-1]
@@ -412,6 +407,7 @@ def test_tool_execution_error_sends_is_error_tool_result():
 # ---------------------------------------------------------------------------
 # Conversation history
 # ---------------------------------------------------------------------------
+
 
 def test_generate_response_prepends_history_to_system_prompt():
     gen = make_generator()
