@@ -220,29 +220,84 @@ header h1 {
 
 /* Collapsible Sources */
 .sources-collapsible {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     font-size: 0.75rem;
     color: var(--text-secondary);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-top: 0.5rem;
 }
 
 .sources-collapsible summary {
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0;
     user-select: none;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
 }
+
+.sources-collapsible summary::-webkit-details-marker { display: none; }
 
 .sources-collapsible summary:hover {
     color: var(--text-primary);
 }
 
 .sources-collapsible[open] summary {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.sources-collapsible[open] .sources-arrow {
+    transform: rotate(90deg);
+}
+
+.sources-arrow {
+    display: inline-block;
+    font-size: 0.6rem;
+    transition: transform 0.15s;
 }
 
 .sources-content {
-    padding: 0 0.5rem 0.25rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0 0 0.25rem 0;
+}
+
+.source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(99, 179, 237, 0.1);
+    border: 1px solid rgba(99, 179, 237, 0.25);
+    color: #63b3ed;
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.source-pill:hover {
+    background: rgba(99, 179, 237, 0.2);
+    border-color: rgba(99, 179, 237, 0.5);
+    color: #90cdf4;
+}
+
+.source-pill.no-link {
     color: var(--text-secondary);
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    cursor: default;
 }
 
 /* Markdown formatting styles */
@@ -443,6 +498,37 @@ header h1 {
     border-radius: 8px;
     border: 1px solid rgba(34, 197, 94, 0.2);
     margin: 0.5rem 0;
+}
+
+/* New Chat Button */
+.new-chat-button {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
+    width: 100%;
+    text-align: left;
+    display: block;
+}
+
+.new-chat-button:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+
+.new-chat-button:hover {
+    color: var(--primary-color);
 }
 
 /* Sidebar Headers */
